@@ -34,6 +34,19 @@ class Track():
             int(xs[IY] + xs[IW] // 2)
         ])
 
+    def to_dict(self):
+        xs = self.KF.xs
+        return {
+            'id': self.id,
+            'top': self.bb[0].item(),
+            'left': self.bb[1].item(),
+            'bottom': self.bb[2].item(),
+            'right': self.bb[3].item(),
+            'vel_x': xs[IVX].item(),
+            'vel_y': xs[IVY].item(),
+            'vel_w': xs[IVW].item(),
+            'vel_h': xs[IVH].item(),
+        }
 
 class BaseKF():
     def __init__(self):

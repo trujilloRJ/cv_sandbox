@@ -1,0 +1,4 @@
+KEY_ESC = 27
+KEY_SPACE = 32
+KEY_A = 97
+KEY_D = 100
