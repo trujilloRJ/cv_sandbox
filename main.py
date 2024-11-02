@@ -50,6 +50,7 @@ def do_track_cyclic(track_list, dets, cycle, cycle_time):
         tracks_ids_to_delete = []
         for i, trk in enumerate(track_list):
             trk.life_count += 1
+            trk.tentative = False if trk.life_count >= 5 else True
             if i in matched_tracks_id:
                 trk.match = True
                 trk.unmatch_count = 0
@@ -61,9 +62,8 @@ def do_track_cyclic(track_list, dets, cycle, cycle_time):
             else:
                 trk.match = False
                 trk.unmatch_count += 1
-                if trk.unmatch_count >= 5:
+                if (trk.tentative and trk.unmatch_count >= 1) or trk.unmatch_count >= 5:
                     tracks_ids_to_delete.append(trk.id)
-
 
         # new tracks from unassociated detections
         for det_id in cur_dets.index:
@@ -118,8 +118,9 @@ if __name__ == "__main__":
 
         # drawing track bounding box
         for track in track_list:
-            cv.rectangle(frame, (track.bb[1], track.bb[0]), (track.bb[3], track.bb[2]), (0, 0, 255), 1)
-            cv.putText(frame, f'{track.id}', (track.bb[1]-10, track.bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
+            if not track.tentative:
+                cv.rectangle(frame, (track.bb[1], track.bb[0]), (track.bb[3], track.bb[2]), (0, 0, 255), 1)
+                cv.putText(frame, f'{track.id}', (track.bb[1]-10, track.bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
         
         # show image
         cv.imshow("display", frame)

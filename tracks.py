@@ -10,6 +10,7 @@ class Track():
         self.life_count = 0
         self.unmatch_count = 0
         self.match = False
+        self.tentative = True
 
         self.KF = LKF_CV(x, y, width, height, dt)
 
