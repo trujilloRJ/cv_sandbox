@@ -16,12 +16,12 @@ if __name__ == '__main__':
     box2 = np.array([150, 150, 200, 200])
     draw_box_and_iou(blank, box1, box2)
 
-    box1 = np.array([300, 300, 350, 350])
-    box2 = np.array([375, 375, 400, 400])
+    box2 = np.array([300, 300, 350, 350])
+    box1 = np.array([375, 375, 400, 400])
     draw_box_and_iou(blank, box1, box2)
 
-    box1 = np.array([100, 300, 200, 350])
-    box2 = np.array([102, 302, 202, 352])
+    box2 = np.array([100, 300, 200, 350])
+    box1 = np.array([102, 302, 202, 352])
     draw_box_and_iou(blank, box1, box2)
 
     cv.imshow('test_iou', blank)
