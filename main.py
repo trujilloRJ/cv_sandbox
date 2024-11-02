@@ -73,7 +73,12 @@ def do_track_cyclic(track_list, dets, cycle, cycle_time):
                 track_list.append(new_trk)
 
         # delete tracks
-        track_list = [trk for trk in track_list if trk.id not in tracks_ids_to_delete]
+        if len(tracks_ids_to_delete) > 0:
+            for i, trk in enumerate(track_list):
+                if trk.id in tracks_ids_to_delete:
+                    del track_list[i]
+
+    return track_list
 
 
 if __name__ == "__main__":
@@ -101,7 +106,7 @@ if __name__ == "__main__":
         cur_dets = dets.loc[dets['frame'] == frame_index, :]
 
         # tracking cycle here
-        do_track_cyclic(track_list, cur_dets, cyc, cycle_time)
+        track_list = do_track_cyclic(track_list, cur_dets, cyc, cycle_time)
 
         # drawing det bounding box
         for det_id in cur_dets.index:
