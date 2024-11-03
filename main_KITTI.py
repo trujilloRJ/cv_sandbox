@@ -6,8 +6,10 @@ from track_main import do_track_cyclic
 from utils import KEY_ESC
 from configuration import get_config
 
+SEQUENCE = "0000"
 IMG_PATH = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/images/training/image_02/0000/"
-DET_FILE = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/0000.txt"
+# DET_FILE = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/0000.txt"
+DET_FILE = f"C:/javier/personal_projects/computer_vision/cv_sandbox/{SEQUENCE}_nms_dets.csv"
 DATASET = 'KITTI'
 SHOW_WINDOW = True
 
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     track_list = []
 
     # pre-process detections
-    dets = dets.loc[dets['score'] > 0, :]
+    # dets = dets.loc[dets['score'] > 0, :]
     dets.loc[:, 'center_x'] = (dets.loc[:, 'top'] + dets.loc[:, 'bottom']) // 2
     dets.loc[:, 'center_y'] = (dets.loc[:, 'left'] + dets.loc[:, 'right']) // 2
     dets.loc[:, 'width'] = (dets.loc[:, 'right'] - dets.loc[:, 'left']).astype(int)
@@ -56,9 +58,9 @@ if __name__ == "__main__":
 
             # drawing track bounding box
             for track in track_list:
-                if not track.tentative:
-                    cv.rectangle(frame, (track.bb[1], track.bb[0]), (track.bb[3], track.bb[2]), (0, 0, 255), 1)
-                    cv.putText(frame, f'{track.id}', (track.bb[1]-10, track.bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
+                # if not track.tentative:
+                cv.rectangle(frame, (track.bb[1], track.bb[0]), (track.bb[3], track.bb[2]), (0, 0, 255), 1)
+                cv.putText(frame, f'{track.id}', (track.bb[1]-10, track.bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
 
             cv.putText(frame, f'{cyc}:{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
             

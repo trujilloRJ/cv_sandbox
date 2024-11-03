@@ -7,8 +7,9 @@ from configuration import get_config
 
 
 IMG_PATH = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/images/training/image_02/0000/"
-DET_FILE = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/0000.txt"
-# TRACK_FILE = r"C:/javier/personal_projects/computer_vision/cv_sandbox/tracks.csv"
+SEQUENCE = "0000"
+# DET_FILE = f"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/{SEQUENCE}.txt"
+DET_FILE = f"C:/javier/personal_projects/computer_vision/cv_sandbox/{SEQUENCE}_nms_dets.csv"
 DATASET = 'KITTI'
 
 def load_img(frame_name, dets, show_dets, show_tracks):
