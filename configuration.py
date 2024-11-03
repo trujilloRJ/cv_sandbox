@@ -1,5 +1,6 @@
 KITTI = {
-    'det_cols': ['frame', 'track_id', 'type', 'truncated', 'occluded', 'alpha', 'left', 'top', 'right', 'bottom', 'height', 'width', 'length', 'x', 'y', 'z', 'rotation_y', 'score']
+    'det_cols': ['frame', 'track_id', 'type', 'truncated', 'occluded', 'alpha', 'left', 'top', 'right', 'bottom', 'height', 'width', 'length', 'x', 'y', 'z', 'rotation_y', 'score'],
+    'FPS': 10
 }
 
 MOTS = {

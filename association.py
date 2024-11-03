@@ -12,7 +12,7 @@ def associate_tracks_dets(track_list, cur_dets):
     for i, track in enumerate(track_list):
         for j, det_id in enumerate(cur_dets.index):
             det = pd.Series(cur_dets.loc[det_id, :])
-            det_bb = np.array([det['bb_top'].item(), det['bb_left'].item(), det['bb_bottom'].item(), det['bb_right'].item()])
+            det_bb = np.array([det['top'].item(), det['left'].item(), det['bottom'].item(), det['right'].item()])
             cost_matrix[i, j] = compute_iou(track.bb, det_bb)
 
     track_indices, det_indices = linear_sum_assignment(cost_matrix, maximize=True)
