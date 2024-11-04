@@ -46,6 +46,7 @@ class Track():
             'vel_y': xs[IVY].item(),
             'vel_w': xs[IVW].item(),
             'vel_h': xs[IVH].item(),
+            'tentative': self.tentative
         }
 
 class BaseKF():

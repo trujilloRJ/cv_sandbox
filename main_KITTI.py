@@ -11,7 +11,7 @@ IMG_PATH = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_track
 # DET_FILE = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/0000.txt"
 DET_FILE = f"C:/javier/personal_projects/computer_vision/cv_sandbox/{SEQUENCE}_nms_dets.csv"
 DATASET = 'KITTI'
-SHOW_WINDOW = True
+SHOW_WINDOW = False
 
 
 if __name__ == "__main__":

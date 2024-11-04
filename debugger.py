@@ -10,6 +10,7 @@ IMG_PATH = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_track
 SEQUENCE = "0000"
 # DET_FILE = f"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/{SEQUENCE}.txt"
 DET_FILE = f"C:/javier/personal_projects/computer_vision/cv_sandbox/{SEQUENCE}_nms_dets.csv"
+TRACK_FILE = "C:/javier/personal_projects/computer_vision/cv_sandbox/tracks.csv"
 DATASET = 'KITTI'
 
 def load_img(frame_name, dets, show_dets, show_tracks):
@@ -25,12 +26,12 @@ def load_img(frame_name, dets, show_dets, show_tracks):
             bbrb = (int(det['right']), int(det['bottom']))
             cv.rectangle(frame, bbtl, bbrb, (0,255,0), 1)
 
-    # if show_tracks:
-    # cur_tracks = tracks.loc[tracks['frame'] == frame_index, :]
-    #     # drawing track bounding box
-    #     for track_id, track in cur_tracks.iterrows():
-    #         cv.rectangle(frame, (int(track['left']), int(track['top'])), (int(track['right']), int(track['bottom'])), (0, 0, 255), 1)
-    #         cv.putText(frame, f'{int(track['id'])}', (int(track['left'])-10, int(track['top'])-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
+    if show_tracks:
+        cur_tracks = tracks.loc[(tracks['frame'] == frame_index) & (tracks['tentative'] == False), :]
+        # drawing track bounding box
+        for _, track in cur_tracks.iterrows():
+            cv.rectangle(frame, (int(track['left']), int(track['top'])), (int(track['right']), int(track['bottom'])), (0, 0, 255), 1)
+            cv.putText(frame, f'{int(track['id'])}', (int(track['left'])-10, int(track['top'])-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
 
     cv.putText(frame, f'{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
 
@@ -40,7 +41,7 @@ def load_img(frame_name, dets, show_dets, show_tracks):
 if __name__ == '__main__':
     
     show_dets = True
-    show_tracks = False
+    show_tracks = True
 
     config = get_config(DATASET)
     frames = listdir(IMG_PATH)
@@ -49,9 +50,9 @@ if __name__ == '__main__':
     dets.columns = config['det_cols']
     dets = dets.loc[dets['score'] > 0, :]
 
-    # tracks = pd.read_csv(TRACK_FILE)
-    # cols_to_round = ['left', 'top', 'right', 'bottom']
-    # tracks[cols_to_round] = np.round(tracks[cols_to_round]).astype(int)
+    tracks = pd.read_csv(TRACK_FILE)
+    cols_to_round = ['left', 'top', 'right', 'bottom']
+    tracks[cols_to_round] = np.round(tracks[cols_to_round]).astype(int)
 
     cur_frame = 0
     run = True

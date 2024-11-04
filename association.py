@@ -38,7 +38,7 @@ def compute_iou(box1: np.ndarray, box2: np.ndarray):
     if ci - ai <= 0:
         return 0
     
-    area_inter = np.abs((ci - ai)*(di - bi))
+    area_inter = (ci - ai)*(di - bi)
 
     # computing union area
     area1 = np.abs((a1 - c1) * (b1 - d1))
