@@ -6,11 +6,11 @@ from track_main import do_track_cyclic
 from utils import KEY_ESC
 from configuration import get_config
 
-SEQUENCE = "0000"
-IMG_PATH = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/images/training/image_02/0000/"
-# DET_FILE = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/0000.txt"
-DET_FILE = f"C:/javier/personal_projects/computer_vision/cv_sandbox/{SEQUENCE}_nms_dets.csv"
+SEQUENCE = "0002"
+IMG_PATH = f"data/{SEQUENCE}/"
+DET_FILE = f"data/nms/{SEQUENCE}.csv"
 DATASET = 'KITTI'
+SAVE_PATH = f'data/tracks/'
 SHOW_WINDOW = False
 
 
@@ -72,6 +72,6 @@ if __name__ == "__main__":
 
     # save tracks
     tracks = pd.DataFrame.from_records(global_track_list)
-    tracks.to_csv("tracks.csv")
+    tracks.to_csv(f"{SAVE_PATH}{SEQUENCE}.csv")
 
     cv.destroyAllWindows()

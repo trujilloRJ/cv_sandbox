@@ -4,9 +4,10 @@ import numpy as np
 from configuration import get_config
 from association import compute_iou
 
-SEQUENCE = "0000"
+SEQUENCE = "0002"
 DET_FILE = f"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/{SEQUENCE}.txt"
 DATASET = 'KITTI'
+SAVE_PATH = f"data/nms/"
 
 if __name__ == "__main__":
     config = get_config(DATASET)
@@ -48,4 +49,4 @@ if __name__ == "__main__":
                     suppress_index.append(k_idx)
     nms_dets = dets.loc[picked_dets_indexes, :]
 
-    nms_dets.to_csv(f'{SEQUENCE}_nms_dets.csv', sep=" ", index=False, header=False)
+    nms_dets.to_csv(f'{SAVE_PATH}{SEQUENCE}.csv', sep=" ", index=False, header=False)

@@ -6,11 +6,10 @@ from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N
 from configuration import get_config
 
 
-IMG_PATH = r"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/images/training/image_02/0000/"
-SEQUENCE = "0000"
-# DET_FILE = f"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/{SEQUENCE}.txt"
-DET_FILE = f"C:/javier/personal_projects/computer_vision/cv_sandbox/{SEQUENCE}_nms_dets.csv"
-TRACK_FILE = "C:/javier/personal_projects/computer_vision/cv_sandbox/tracks.csv"
+SEQUENCE = "0002"
+IMG_PATH = f"data/{SEQUENCE}/"
+DET_FILE = f"data/nms/{SEQUENCE}.csv"
+TRACK_FILE = f"data/tracks/{SEQUENCE}.csv"
 DATASET = 'KITTI'
 
 def load_img(frame_name, dets, show_dets, show_tracks):
