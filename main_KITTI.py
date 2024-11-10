@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from os import listdir
 from track_main import do_track_cyclic
-from utils import KEY_ESC
+from utils import KEY_ESC, OBJ_TYPES, draw_track_bb, draw_detection_bb
 from configuration import get_config
 
 SEQUENCE = "0002"
@@ -27,7 +27,6 @@ if __name__ == "__main__":
     track_list = []
 
     # pre-process detections
-    # dets = dets.loc[dets['score'] > 0, :]
     dets.loc[:, 'center_x'] = (dets.loc[:, 'top'] + dets.loc[:, 'bottom']) // 2
     dets.loc[:, 'center_y'] = (dets.loc[:, 'left'] + dets.loc[:, 'right']) // 2
     dets.loc[:, 'width'] = (dets.loc[:, 'right'] - dets.loc[:, 'left']).astype(int)
@@ -49,20 +48,14 @@ if __name__ == "__main__":
             global_track_list.append(trk_dict)
 
         if SHOW_WINDOW:
-            # drawing det bounding box
             for det_id in cur_dets.index:
                 det = cur_dets.loc[det_id, :]
-                bbtl = (int(det['left']), int(det['top']))
-                bbrb = (int(det['right']), int(det['bottom']))
-                cv.rectangle(frame, bbtl, bbrb, (0,255,0), 1)
+                draw_detection_bb(frame, det)
 
-            # drawing track bounding box
             for track in track_list:
-                # if not track.tentative:
-                cv.rectangle(frame, (track.bb[1], track.bb[0]), (track.bb[3], track.bb[2]), (0, 0, 255), 1)
-                cv.putText(frame, f'{track.id}', (track.bb[1]-10, track.bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
+                draw_track_bb(frame, track.id, track.type, track.bb)
 
-            cv.putText(frame, f'{cyc}:{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
+            cv.putText(frame, f'{cyc}:{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255))
             
             # show image
             cv.imshow("display", frame)
@@ -72,6 +65,6 @@ if __name__ == "__main__":
 
     # save tracks
     tracks = pd.DataFrame.from_records(global_track_list)
-    tracks.to_csv(f"{SAVE_PATH}{SEQUENCE}.csv")
+    tracks.to_csv(f"{SAVE_PATH}{SEQUENCE}.csv", index=None)
 
     cv.destroyAllWindows()

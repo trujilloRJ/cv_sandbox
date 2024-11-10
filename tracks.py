@@ -4,13 +4,14 @@ import numpy as np
 IX, IY, IW, IH, IVX, IVY, IVW, IVH = 0, 1, 2, 3, 4, 5, 6, 7
 
 class Track():
-    def __init__(self, id_, x, y, width, height, dt):
+    def __init__(self, id_, x, y, width, height, dt, type: str = None):
         self.id = id_
         self.dt = dt
         self.life_count = 0
         self.unmatch_count = 0
         self.match = False
         self.tentative = True
+        self.type = type
 
         self.KF = LKF_CV(x, y, width, height, dt)
 
@@ -46,7 +47,8 @@ class Track():
             'vel_y': xs[IVY].item(),
             'vel_w': xs[IVW].item(),
             'vel_h': xs[IVH].item(),
-            'tentative': self.tentative
+            'tentative': self.tentative,
+            'type': self.type
         }
 
 class BaseKF():

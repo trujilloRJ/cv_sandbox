@@ -2,7 +2,7 @@ import cv2 as cv
 import pandas as pd
 import numpy as np
 from os import listdir
-from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N
+from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, draw_detection_bb, draw_track_bb
 from configuration import get_config
 
 
@@ -17,20 +17,19 @@ def load_img(frame_name, dets, show_dets, show_tracks):
     frame = cv.imread(IMG_PATH + frame_name, cv.IMREAD_COLOR)
     cur_dets = dets.loc[dets['frame'] == frame_index, :]
 
-    # drawing det bounding box
+    # drawing
     if show_dets:
         for det_id in cur_dets.index:
             det = cur_dets.loc[det_id, :]
-            bbtl = (int(det['left']), int(det['top']))
-            bbrb = (int(det['right']), int(det['bottom']))
-            cv.rectangle(frame, bbtl, bbrb, (0,255,0), 1)
+            draw_detection_bb(frame, det)
 
     if show_tracks:
-        cur_tracks = tracks.loc[(tracks['frame'] == frame_index) & (tracks['tentative'] == False), :]
+        # cur_tracks = tracks.loc[(tracks['frame'] == frame_index) & (tracks['tentative'] == False), :]
+        cur_tracks = tracks.loc[(tracks['frame'] == frame_index), :]
         # drawing track bounding box
         for _, track in cur_tracks.iterrows():
-            cv.rectangle(frame, (int(track['left']), int(track['top'])), (int(track['right']), int(track['bottom'])), (0, 0, 255), 1)
-            cv.putText(frame, f'{int(track['id'])}', (int(track['left'])-10, int(track['top'])-10), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255))
+            track_bb = [int(track['top']), int(track['left']), int(track['bottom']), int(track['right'])]
+            draw_track_bb(frame, track['id'], track['type'], track_bb)
 
     cv.putText(frame, f'{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
 
@@ -47,7 +46,6 @@ if __name__ == '__main__':
 
     dets = pd.read_csv(DET_FILE, header=None, sep=" ")
     dets.columns = config['det_cols']
-    dets = dets.loc[dets['score'] > 0, :]
 
     tracks = pd.read_csv(TRACK_FILE)
     cols_to_round = ['left', 'top', 'right', 'bottom']

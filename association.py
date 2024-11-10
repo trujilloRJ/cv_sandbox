@@ -2,18 +2,20 @@ import numpy as np
 import pandas as pd 
 from scipy.optimize import linear_sum_assignment
 
+COST_MIN = -9999.0  # minimum cost in iou terms to rule out detection
 COST_THR = 0.2 # minimum IoU cost to declare a match
 
 def associate_tracks_dets(track_list, cur_dets):
     matched_tracks_id = []
     matched_dets_id = []
     n_dets, n_tracks = len(cur_dets), len(track_list)
-    cost_matrix = np.zeros((n_tracks, n_dets), dtype=float)
+    cost_matrix = np.full((n_tracks, n_dets), COST_MIN, dtype=float)
     for i, track in enumerate(track_list):
         for j, det_id in enumerate(cur_dets.index):
             det = pd.Series(cur_dets.loc[det_id, :])
-            det_bb = np.array([det['top'].item(), det['left'].item(), det['bottom'].item(), det['right'].item()])
-            cost_matrix[i, j] = compute_iou(track.bb, det_bb)
+            if det['type'] == track.type:
+                det_bb = np.array([det['top'].item(), det['left'].item(), det['bottom'].item(), det['right'].item()])
+                cost_matrix[i, j] = compute_iou(track.bb, det_bb)
 
     track_indices, det_indices = linear_sum_assignment(cost_matrix, maximize=True)
     for i, j in zip(track_indices, det_indices):
@@ -35,8 +37,8 @@ def compute_iou(box1: np.ndarray, box2: np.ndarray):
     di = min(d1, d2)
 
     # no need to do additional calculations if there is no intersection
-    if ci - ai <= 0:
-        return 0
+    if (ci - ai <= 0) or (di - bi <= 0):
+        return COST_MIN
     
     area_inter = (ci - ai)*(di - bi)
 

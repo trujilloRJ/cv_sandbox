@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from configuration import get_config
 from association import compute_iou
+from utils import OBJ_TYPES
 
 SEQUENCE = "0002"
 DET_FILE = f"C:/javier/personal_projects/computer_vision/data/KITTI_object_tracking/detections_regionlet/training/det_02/{SEQUENCE}.txt"
@@ -13,13 +14,14 @@ if __name__ == "__main__":
     config = get_config(DATASET)
     min_score = -1.0
     nms_iou_thr = 0.4
+    interested_types = OBJ_TYPES
 
     # load dets
     config = get_config(DATASET)
     dets = pd.read_csv(DET_FILE, header=None, sep=" ")
     dets.columns = config['det_cols']
 
-    # filter dets with low score
+    # filter dets with low score and type
     dets = dets[dets['score'] > min_score]
 
     # sort by score
