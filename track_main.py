@@ -52,3 +52,27 @@ def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
                     del track_list[i]
 
     return track_list
+
+
+def format_tracks_for_eval(tracks_df):
+    cols = ['frame', 'id', 'type', 'truncated', 'occluded', 'alpha', 
+                  'left', 'top', 'right', 'bottom', 
+                  'height_m', 'width_m', 'length_m',
+                  'x', 'y', 'z', 'rotation_y', 'score']
+    
+    tracks_df.loc[:, 'truncated'] = -1
+    tracks_df.loc[:, 'occluded'] = -1
+    tracks_df.loc[:, 'alpha'] = 0.0
+    tracks_df.loc[:, 'height_m'] = 2
+    tracks_df.loc[:, 'width_m'] = 3
+    tracks_df.loc[:, 'length_m'] = 5
+    tracks_df.loc[:, 'x'] = -1
+    tracks_df.loc[:, 'y'] = -1
+    tracks_df.loc[:, 'z'] = -1
+    tracks_df.loc[:, 'rotation_y'] = -1
+    tracks_df.loc[:, 'score'] = 0.5 # TODO: fill later
+
+    tracks_df = tracks_df[cols]
+
+    return tracks_df
+
