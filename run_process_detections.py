@@ -17,9 +17,11 @@ if __name__ == "__main__":
     nms_iou_thr = 0.4
     interested_types = OBJ_TYPES
 
-    # load dets
+
     for k, det_seq in enumerate(det_list):
         print(f"{k+1}/{len(det_list)}")
+
+        # load dets
         dets = pd.read_csv(det_seq, header=None, sep=" ")
         dets.columns = config['det_cols']
 
@@ -51,7 +53,15 @@ if __name__ == "__main__":
                     iou = compute_iou(box_ref, box_test)
                     if iou > nms_iou_thr:
                         suppress_index.append(k_idx)
+
         nms_dets = dets.loc[picked_dets_indexes, :]
 
+        # post-process detections
+        nms_dets.loc[:, 'center_x'] = (nms_dets.loc[:, 'top'] + nms_dets.loc[:, 'bottom']) // 2
+        nms_dets.loc[:, 'center_y'] = (nms_dets.loc[:, 'left'] + nms_dets.loc[:, 'right']) // 2
+        nms_dets.loc[:, 'width'] = (nms_dets.loc[:, 'right'] - nms_dets.loc[:, 'left']).astype(int)
+        nms_dets.loc[:, 'height'] = (nms_dets.loc[:, 'bottom'] - nms_dets.loc[:, 'top']).astype(int)
+
         seq_name = det_seq[-8:-4]
-        nms_dets.to_csv(f'{SAVE_PATH}{seq_name}.csv', sep=" ", index=False, header=False)
+        nms_dets = nms_dets.sort_values(by='frame', ascending=True).reset_index(drop=True)
+        nms_dets.to_csv(f'{SAVE_PATH}{seq_name}.csv', sep=" ", index=False)
