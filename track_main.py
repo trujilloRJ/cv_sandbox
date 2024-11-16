@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from track_maintenance import create_new_track
 from association import associate_tracks_dets
+from configuration import get_config
 
 
 def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
@@ -54,11 +55,8 @@ def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
     return track_list
 
 
-def format_tracks_for_eval(tracks_df):
-    cols = ['frame', 'id', 'type', 'truncated', 'occluded', 'alpha', 
-                  'left', 'top', 'right', 'bottom', 
-                  'height_m', 'width_m', 'length_m',
-                  'x', 'y', 'z', 'rotation_y', 'score']
+def format_tracks_for_eval(tracks_df, dataset='KITTI'):
+    config = get_config(dataset)
     
     tracks_df.loc[:, 'truncated'] = -1
     tracks_df.loc[:, 'occluded'] = -1
@@ -72,7 +70,7 @@ def format_tracks_for_eval(tracks_df):
     tracks_df.loc[:, 'rotation_y'] = -1
     tracks_df.loc[:, 'score'] = 0.5 # TODO: fill later
 
-    tracks_df = tracks_df[cols]
+    tracks_df = tracks_df[config['track_cols']]
 
     return tracks_df
 

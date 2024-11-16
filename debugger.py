@@ -6,10 +6,10 @@ from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, draw_detection_bb, draw_t
 from configuration import get_config
 
 
-SEQUENCE = "0002"
-IMG_PATH = f"data/{SEQUENCE}/"
+SEQUENCE = "0000"
+IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
-TRACK_FILE = f"data/tracks/{SEQUENCE}.csv"
+TRACK_FILE = f"data/tracks/{SEQUENCE}.txt"
 DATASET = 'KITTI'
 
 def load_img(frame_name, dets, show_dets, show_tracks):
@@ -44,10 +44,12 @@ if __name__ == '__main__':
     config = get_config(DATASET)
     frames = listdir(IMG_PATH)
 
-    dets = pd.read_csv(DET_FILE, header=None, sep=" ")
-    dets.columns = config['det_cols']
+    # dets = pd.read_csv(DET_FILE, header=None, sep=" ")
+    # dets.columns = config['det_cols']
+    dets = pd.read_csv(DET_FILE, sep=' ')
 
-    tracks = pd.read_csv(TRACK_FILE)
+    tracks = pd.read_csv(TRACK_FILE, sep=' ')
+    tracks.columns = config['track_cols']
     cols_to_round = ['left', 'top', 'right', 'bottom']
     tracks[cols_to_round] = np.round(tracks[cols_to_round]).astype(int)
 
