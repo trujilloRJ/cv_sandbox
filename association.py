@@ -9,15 +9,22 @@ def associate_tracks_dets(track_list, cur_dets):
     matched_tracks_id = []
     matched_dets_id = []
     n_dets, n_tracks = len(cur_dets), len(track_list)
+    allowed_class_mismatch = ['Pedestrian', 'Cyclist']
+
+    # computing cost matrix
     cost_matrix = np.full((n_tracks, n_dets), COST_MIN, dtype=float)
     for i, track in enumerate(track_list):
         for j, det_id in enumerate(cur_dets.index):
             det = pd.Series(cur_dets.loc[det_id, :])
-            if det['type'] == track.type:
+            det_type = det['type']
+            if det_type == track.type or (det_type in allowed_class_mismatch and track.type in allowed_class_mismatch):
                 det_bb = np.array([det['top'].item(), det['left'].item(), det['bottom'].item(), det['right'].item()])
                 cost_matrix[i, j] = compute_iou(track.bb, det_bb)
 
+    # Hungarian assignment
     track_indices, det_indices = linear_sum_assignment(cost_matrix, maximize=True)
+
+    # filling match tracks and detection lists
     for i, j in zip(track_indices, det_indices):
         if cost_matrix[i, j] > COST_THR:
             matched_tracks_id.append(i.item())

@@ -2,14 +2,14 @@ import cv2 as cv
 import pandas as pd
 import numpy as np
 from os import listdir
-from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, draw_detection_bb, draw_track_bb, draw_gt_bb
+from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, KEY_G, draw_detection_bb, draw_track_bb, draw_gt_bb, mark_gt
 from configuration import get_config
 
-
+TRACKER_NAME = 'customSORT'
 SEQUENCE = "0000"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
-TRACK_FILE = f"data/tracks/{SEQUENCE}.txt"
+TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data'
 GT_FILE = f"data/gt/{SEQUENCE}.txt"
 DATASET = 'KITTI'
 
@@ -35,19 +35,23 @@ def load_img(frame_name, dets, tracks, gt, show_dets, show_tracks, show_gt):
 
     # drawing track bounding box
     if show_gt:
-        shapes = np.zeros_like(frame, np.uint8)
-        for _, gt_ in cur_gt.iterrows():
-            bb = [int(gt_['top']), int(gt_['left']), int(gt_['bottom']), int(gt_['right'])]
-            draw_gt_bb(shapes, gt_['id'], gt_['type'], bb)
-        alpha = 0.8
-        mask = shapes.astype(bool)
-        frame[mask] = cv.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
-
+        frame = draw_filled_gt(frame, cur_gt)
 
     cv.putText(frame, f'{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
 
     return frame
 
+
+def draw_filled_gt(frame, cur_gt):
+    shapes = np.zeros_like(frame, np.uint8)
+    for _, gt_ in cur_gt.iterrows():
+        bb = [int(gt_['top']), int(gt_['left']), int(gt_['bottom']), int(gt_['right'])]
+        draw_gt_bb(shapes, bb)
+        mark_gt(frame, gt_['id'], gt_['type'], bb)
+    alpha = 0.8
+    mask = shapes.astype(bool)
+    frame[mask] = cv.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
+    return frame
 
 if __name__ == '__main__':
     
@@ -68,6 +72,7 @@ if __name__ == '__main__':
     gt = pd.read_csv(GT_FILE, sep=' ')
     gt.columns = config['track_cols'][:-1]
     gt[cols_to_round] = np.round(gt[cols_to_round]).astype(int)
+    gt = gt.loc[gt['type'] != 'DontCare', :]
 
     cur_frame = 0
     run = True
@@ -87,5 +92,9 @@ if __name__ == '__main__':
             show_dets = not show_dets
         if key == KEY_M:
             show_tracks = not show_tracks
+        if key == KEY_G:
+            show_gt = not show_gt
         if key == KEY_ESC:
             run = False
+        else:
+            print(key)
