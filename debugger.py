@@ -9,7 +9,7 @@ TRACKER_NAME = 'customSORT'
 SEQUENCE = "0000"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
-TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data'
+TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data/{SEQUENCE}.txt'
 GT_FILE = f"data/gt/{SEQUENCE}.txt"
 DATASET = 'KITTI'
 
