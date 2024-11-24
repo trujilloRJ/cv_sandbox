@@ -1,11 +1,13 @@
 import pandas as pd 
 import numpy as np
+from typing import List
 from track_maintenance import create_new_track
 from association import associate_main, associate_tracks_dets
 from configuration import get_config
+from tracks import Track
 
 
-def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
+def do_track_cyclic(track_list: List[Track], cur_dets, cycle, cycle_time):
     if cycle == 0:
         # create tracks from detections
         for det_id in cur_dets.index:
@@ -33,6 +35,11 @@ def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
                 trk.unmatch_count += 1
                 if (trk.tentative and trk.unmatch_count >= 1) or trk.unmatch_count >= 5:
                     tracks_ids_to_delete.append(trk.id)
+
+            # delete tracks exiting FoV
+            is_exiting_fov = (trk.bb[1] <= 0 and trk.is_moving_left()) or (trk.bb[3] >= 1200 and not trk.is_moving_left())
+            if is_exiting_fov:
+                tracks_ids_to_delete.append(trk.id)
 
         # new tracks from unassociated detections
         for det_id in cur_dets.index:

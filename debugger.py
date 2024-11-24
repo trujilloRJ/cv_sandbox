@@ -5,7 +5,7 @@ from os import listdir
 from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, KEY_G, draw_detection_bb, draw_track_bb, draw_gt_bb, mark_gt
 from configuration import get_config
 
-TRACKER_NAME = 'customSORT'
+TRACKER_NAME = 'customSORT_pa_lowr'
 SEQUENCE = "0000"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"

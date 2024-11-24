@@ -35,6 +35,15 @@ class Track():
             int(xs[IY] + xs[IW] // 2)
         ])
 
+    def is_moving_left(self):
+        return self.KF.xs[IVY] < 0
+    
+    def is_moving_bottom(self):
+        return self.KF.xs[IVX] > 0
+
+    def __repr__(self):
+        print(self.to_dict())
+
     def to_dict(self):
         xs = self.KF.xs
         return {
@@ -83,7 +92,8 @@ class LKF_CV(BaseKF):
         # TODO: check for a better Q
         self.Q = np.diag([2] * self.n_x)**2
 
-        self.R = np.diag([5, 5, 10, 10])**2
+        # self.R = np.diag([5, 5, 10, 10])**2
+        self.R = np.diag([1, 1, 2, 2])**2
 
         self.H = np.eye(self.n_z, self.n_x)
 

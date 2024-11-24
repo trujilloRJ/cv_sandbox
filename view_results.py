@@ -2,6 +2,8 @@ import pandas as pd
 
 TRACKER_NAME = 'customSORT'
 # TRACKER_NAME = 'customSORT_priorityAssociation'
+# TRACKER_NAME = 'customSORT_pa_lowr'
+# TRACKER_NAME = 'customSORT_pa_lowr_exfov'
 RESULTS_FOLDER = f'data/tracks/{TRACKER_NAME}'
 
 def main():

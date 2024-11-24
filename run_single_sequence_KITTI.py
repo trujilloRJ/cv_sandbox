@@ -6,7 +6,7 @@ from track_main import do_track_cyclic, format_tracks_for_eval
 from utils import KEY_ESC, OBJ_TYPES, draw_track_bb, draw_detection_bb
 from configuration import get_config
 
-SEQUENCE = "0000"
+SEQUENCE = "0001"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
 DATASET = 'KITTI'

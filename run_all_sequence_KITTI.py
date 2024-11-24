@@ -6,7 +6,8 @@ from track_main import do_track_cyclic, format_tracks_for_eval
 from configuration import get_config
 
 
-TRACKER_NAME = 'customSORT_priorityAssociation'
+# TRACKER_NAME = 'customSORT_priorityAssociation'
+TRACKER_NAME = 'customSORT_pa_lowr_exfov'
 DET_FOLDER = f"data/nms/"
 DATASET = 'KITTI'
 SAVE_PATH = f'data/tracks/{TRACKER_NAME}/data/'
