@@ -5,33 +5,49 @@ from scipy.optimize import linear_sum_assignment
 COST_MIN = -9999.0  # minimum cost in iou terms to rule out detection
 COST_THR = 0.2 # minimum IoU cost to declare a match
 
+def associate_main(track_list, cur_dets):
+    primary_track_list = [trk for trk in track_list if trk.tentative == False]
+    tentative_track_list = [trk for trk in track_list if trk.tentative == True]
+
+    # associating primary tracks first
+    matched_ptracks_id, matched_pdets_id = associate_tracks_dets(primary_track_list, cur_dets)
+    cur_unmantched_dets = cur_dets.loc[~cur_dets.index.isin(matched_pdets_id), :]
+    matched_ttracks_id, matched_tdets_id = associate_tracks_dets(tentative_track_list, cur_unmantched_dets)
+    
+    matched_tracks_id = matched_ptracks_id + matched_ttracks_id
+    matched_dets_id = matched_pdets_id + matched_tdets_id
+    return matched_tracks_id, matched_dets_id
+
+
 def associate_tracks_dets(track_list, cur_dets):
     matched_tracks_id = []
-    matched_dets_id = []
-    n_dets, n_tracks = len(cur_dets), len(track_list)
-    allowed_class_mismatch = ['Pedestrian', 'Cyclist']
+    matched_dets_id = []     
 
-    # computing cost matrix
-    cost_matrix = np.full((n_tracks, n_dets), COST_MIN, dtype=float)
-    for i, track in enumerate(track_list):
-        for j, det_id in enumerate(cur_dets.index):
-            det = pd.Series(cur_dets.loc[det_id, :])
-            det_type = det['type']
-            if det_type == track.type or (det_type in allowed_class_mismatch and track.type in allowed_class_mismatch):
-                det_bb = np.array([det['top'].item(), det['left'].item(), det['bottom'].item(), det['right'].item()])
-                cost_matrix[i, j] = compute_iou(track.bb, det_bb)
-
-    # Hungarian assignment
+    cost_matrix = compute_cost_matrix(track_list, cur_dets)
     track_indices, det_indices = linear_sum_assignment(cost_matrix, maximize=True)
 
     # filling match tracks and detection lists
     for i, j in zip(track_indices, det_indices):
         if cost_matrix[i, j] > COST_THR:
-            matched_tracks_id.append(i.item())
+            matched_tracks_id.append(track_list[i.item()].id)
             matched_dets_id.append(cur_dets.index[j].item())
     
     return matched_tracks_id, matched_dets_id
 
+
+def compute_cost_matrix(track_list, dets: pd.DataFrame):
+    allowed_class_mismatch = ['Pedestrian', 'Cyclist']
+    n_tracks, n_dets = len(track_list), len(dets)
+    cost_matrix = np.full((n_tracks, n_dets), COST_MIN, dtype=float)
+    n_dets, n_tracks = len(dets), len(track_list)
+    for i, track in enumerate(track_list):
+        for j, det_id in enumerate(dets.index):
+            det = pd.Series(dets.loc[det_id, :])
+            det_type = det['type']
+            if det_type == track.type or (det_type in allowed_class_mismatch and track.type in allowed_class_mismatch):
+                det_bb = np.array([det['top'].item(), det['left'].item(), det['bottom'].item(), det['right'].item()])
+                cost_matrix[i, j] = compute_iou(track.bb, det_bb)
+    return cost_matrix
 
 def compute_iou(box1: np.ndarray, box2: np.ndarray):
     a1, b1, c1, d1 = box1  # top, left, bottom, right

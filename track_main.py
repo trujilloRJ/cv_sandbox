@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np
 from track_maintenance import create_new_track
-from association import associate_tracks_dets
+from association import associate_main, associate_tracks_dets
 from configuration import get_config
 
 
@@ -17,22 +17,17 @@ def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
         for trk in track_list:
             trk.predict()
 
-        # associate
-        matched_tracks_id, matched_dets_id = associate_tracks_dets(track_list, cur_dets)
+        # association, giving priority to primary tracks
+        matched_tracks_id, matched_dets_id = associate_main(track_list, cur_dets)
 
-        # update associated tracks and track maintenance
         tracks_ids_to_delete = []
         for i, trk in enumerate(track_list):
             trk.life_count += 1
             trk.tentative = False if trk.life_count >= 5 else True
-            if i in matched_tracks_id:
-                trk.match = True
-                trk.unmatch_count = 0
-
-                det_index = matched_dets_id[matched_tracks_id.index(i)]
+            if trk.id in matched_tracks_id:
+                det_index = matched_dets_id[matched_tracks_id.index(trk.id)]
                 det = pd.Series(cur_dets.loc[det_index, :])
-                meas = np.array([det['center_x'].item(), det['center_y'].item(), det['width'].item(), det['height'].item()])
-                trk.update(meas)
+                update_matched_track(trk, det)
             else:
                 trk.match = False
                 trk.unmatch_count += 1
@@ -53,6 +48,13 @@ def do_track_cyclic(track_list, cur_dets, cycle, cycle_time):
                     del track_list[i]
 
     return track_list
+
+
+def update_matched_track(trk, det):
+    trk.match = True
+    trk.unmatch_count = 0
+    meas = np.array([det['center_x'].item(), det['center_y'].item(), det['width'].item(), det['height'].item()])
+    trk.update(meas)
 
 
 def format_tracks_for_eval(tracks_df, dataset='KITTI'):

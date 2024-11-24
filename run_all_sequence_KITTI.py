@@ -1,20 +1,22 @@
 import glob
+import os
 import pandas as pd
 import numpy as np
 from track_main import do_track_cyclic, format_tracks_for_eval
 from configuration import get_config
 
 
-TRACKER_NAME = 'customSORT'
+TRACKER_NAME = 'customSORT_priorityAssociation'
 DET_FOLDER = f"data/nms/"
 DATASET = 'KITTI'
-SAVE_PATH = f'data/tracks/{TRACKER_NAME}/data'
+SAVE_PATH = f'data/tracks/{TRACKER_NAME}/data/'
 
 
 if __name__ == "__main__":
     config = get_config(DATASET)
     det_list = [f for f in glob.glob(f"{DET_FOLDER}*.csv")]
     fps = config['FPS']
+    os.makedirs(SAVE_PATH, exist_ok = True)
     cycle_time = 1/fps
 
     for k, det_seq in enumerate(det_list):

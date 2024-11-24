@@ -7,11 +7,11 @@ from utils import KEY_ESC, OBJ_TYPES, draw_track_bb, draw_detection_bb
 from configuration import get_config
 
 SEQUENCE = "0000"
-IMG_PATH = f"data/{SEQUENCE}/"
+IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
 DATASET = 'KITTI'
 SAVE_PATH = f'data/tracks/'
-SHOW_WINDOW = False
+SHOW_WINDOW = True
 
 
 if __name__ == "__main__":
@@ -20,8 +20,7 @@ if __name__ == "__main__":
     cycle_time = 1/fps
 
     # load detections
-    dets = pd.read_csv(DET_FILE, header=None, sep=' ')
-    dets.columns = config['det_cols']
+    dets = pd.read_csv(DET_FILE, sep=' ')
     frames = listdir(IMG_PATH)
     global_track_list = []
     track_list = []

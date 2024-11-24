@@ -1,6 +1,7 @@
 import pandas as pd
 
 TRACKER_NAME = 'customSORT'
+# TRACKER_NAME = 'customSORT_priorityAssociation'
 RESULTS_FOLDER = f'data/tracks/{TRACKER_NAME}'
 
 def main():
