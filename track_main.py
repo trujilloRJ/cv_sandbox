@@ -7,6 +7,40 @@ from configuration import get_config
 from tracks import Track
 
 
+def main_cyclic(det_fn: str, dataset = 'KITTI', out_tentative = True):
+    config = get_config(dataset)
+    fps = config['FPS']
+    cycle_time = 1/fps
+    global_track_list = []
+    track_list = []
+    
+    # load detections
+    dets = pd.read_csv(det_fn, sep=' ')
+    # frames = np.unique(dets['frame'])
+    frames = np.arange(np.min(dets['frame']), np.max(dets['frame']))
+
+    for cyc, frame_index in enumerate(frames):
+        # filter detections
+        cur_dets = dets.loc[dets['frame'] == frame_index, :]
+
+        # tracking cycle here
+        track_list = do_track_cyclic(track_list, cur_dets, cyc, cycle_time)
+
+        # save tracks in global list
+        for trk in track_list:
+            if trk.tentative and not out_tentative:
+                continue
+            trk_dict = trk.to_dict()
+            trk_dict.update({'frame': cyc})
+            global_track_list.append(trk_dict)
+
+    # format tracks
+    tracks_df = pd.DataFrame.from_records(global_track_list)
+    tracks_df = format_tracks_for_eval(tracks_df)
+
+    return tracks_df
+
+
 def do_track_cyclic(track_list: List[Track], cur_dets, cycle, cycle_time):
     if cycle == 0:
         # create tracks from detections

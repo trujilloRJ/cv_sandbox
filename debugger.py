@@ -5,11 +5,12 @@ from os import listdir
 from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, KEY_G, draw_detection_bb, draw_track_bb, draw_gt_bb, mark_gt
 from configuration import get_config
 
-TRACKER_NAME = 'customSORT_pa_lowr'
-SEQUENCE = "0000"
+TRACKER_NAME = 'customSORT_pa_lowr_exfov'
+SEQUENCE = "0007"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
-TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data/{SEQUENCE}.txt'
+# TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data/{SEQUENCE}.txt'
+TRACK_FILE = f'data/tracks/{SEQUENCE}.txt'
 GT_FILE = f"data/gt/{SEQUENCE}.txt"
 DATASET = 'KITTI'
 
@@ -53,6 +54,11 @@ def draw_filled_gt(frame, cur_gt):
     frame[mask] = cv.addWeighted(frame, alpha, shapes, 1 - alpha, 0)[mask]
     return frame
 
+def click_callback(event, x, y, *args):
+    if event == cv.EVENT_LBUTTONDOWN:
+        print(x, y)
+
+
 if __name__ == '__main__':
     
     show_dets = False
@@ -76,6 +82,9 @@ if __name__ == '__main__':
 
     cur_frame = 0
     run = True
+
+    cv.namedWindow("display")
+    cv.setMouseCallback("display", click_callback)
 
     while(run):
         frame_name = frames[cur_frame]
