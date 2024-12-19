@@ -74,15 +74,12 @@ def do_track_cyclic(track_list: List[Track], cur_dets, cycle, cycle_time):
             else:
                 trk.match = False
                 trk.unmatch_count += 1
-                if (trk.tentative and trk.unmatch_count >= 1) or trk.unmatch_count >= 5:
-                    tracks_ids_to_delete.append(trk.id)
 
             assoc_score = assoc_scores[matched_tracks_id.index(trk.id)] if trk.match else 0
             update_track_score(trk, SCORE_FN, assoc_score, CFA, PD, PFA)
 
             # delete tracks exiting FoV
-            is_exiting_fov = (trk.bb[1] <= 0 and trk.is_moving_left()) or (trk.bb[3] >= 1200 and not trk.is_moving_left())
-            if is_exiting_fov:
+            if track_to_be_removed(trk):
                 tracks_ids_to_delete.append(trk.id)
 
         # new tracks from unassociated detections
@@ -101,7 +98,15 @@ def do_track_cyclic(track_list: List[Track], cur_dets, cycle, cycle_time):
     return track_list
 
 
-def update_matched_track(trk, det):
+def track_to_be_removed(trk: Track):
+    is_bad_tentative = (trk.tentative and trk.unmatch_count >= 1)
+    is_exiting_fov = (trk.bb[1] <= -10 and trk.is_moving_left()) or (trk.bb[3] >= 1200+10 and not trk.is_moving_left())
+    is_low_score = trk.score <= 0.3
+    delete_track = is_bad_tentative or trk.unmatch_count >= 5 or is_exiting_fov or is_low_score
+    return delete_track
+
+
+def update_matched_track(trk: Track, det):
     trk.match = True
     trk.unmatch_count = 0
     meas = np.array([det['center_x'].item(), det['center_y'].item(), det['width'].item(), det['height'].item()])

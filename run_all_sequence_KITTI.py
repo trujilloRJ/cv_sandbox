@@ -7,7 +7,7 @@ from configuration import get_config
 
 # v1 = customSORT_pa_lowr_exfov
 
-TRACKER_NAME = 'customSORT_v1_newScore'
+TRACKER_NAME = 'customSORT_v1_newDeletion'
 DET_FOLDER = f"data/nms/"
 DATASET = 'KITTI'
 SAVE_PATH = f'data/tracks/{TRACKER_NAME}/data/'
