@@ -1,9 +1,8 @@
 import pandas as pd
 
 # TRACKER_NAME = 'customSORT'
-# TRACKER_NAME = 'customSORT_priorityAssociation'
-# TRACKER_NAME = 'customSORT_pa_lowr'
-TRACKER_NAME = 'customSORT_pa_lowr_exfov'
+# TRACKER_NAME = 'customSORT_pa_lowr_exfov'
+TRACKER_NAME = 'customSORT_v1_newScore'
 RESULTS_FOLDER = f'data/tracks/{TRACKER_NAME}'
 COLS = ['HOTA', 'MOTA', 'IDSW', 'IDTP', 'IDFN', 'IDFP', 'DetA', 'AssA', 'DetRe', 'DetPr', 'AssRe', 'AssPr', 'Dets', 'GT_Dets', 'IDs', 'GT_IDs']
 

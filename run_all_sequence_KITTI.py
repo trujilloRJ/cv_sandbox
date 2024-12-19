@@ -5,9 +5,9 @@ import numpy as np
 from track_main import main_cyclic
 from configuration import get_config
 
+# v1 = customSORT_pa_lowr_exfov
 
-# TRACKER_NAME = 'customSORT_priorityAssociation'
-TRACKER_NAME = 'customSORT_pa_lowr_exfov'
+TRACKER_NAME = 'customSORT_v1_newScore'
 DET_FOLDER = f"data/nms/"
 DATASET = 'KITTI'
 SAVE_PATH = f'data/tracks/{TRACKER_NAME}/data/'

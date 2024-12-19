@@ -5,8 +5,8 @@ from os import listdir
 from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, KEY_G, draw_detection_bb, draw_track_bb, draw_gt_bb, mark_gt
 from configuration import get_config
 
-TRACKER_NAME = 'customSORT_pa_lowr_exfov'
-SEQUENCE = "0007"
+TRACKER_NAME = 'customSORT_v1_newScore'
+SEQUENCE = "0002"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
 # TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data/{SEQUENCE}.txt'
@@ -32,7 +32,7 @@ def load_img(frame_name, dets, tracks, gt, show_dets, show_tracks, show_gt):
     if show_tracks:
         for _, track in cur_tracks.iterrows():
             track_bb = [int(track['top']), int(track['left']), int(track['bottom']), int(track['right'])]
-            draw_track_bb(frame, track['id'], track['type'], track_bb)
+            draw_track_bb(frame, track['id'], track['type'], track['score'], track_bb)
 
     # drawing track bounding box
     if show_gt:

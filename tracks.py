@@ -12,6 +12,7 @@ class Track():
         self.match = False
         self.tentative = True
         self.type = type_
+        self.score_llr = 0     # score likelihood ration
 
         self.KF = LKF_CV(x, y, width, height, dt)
 
@@ -40,6 +41,11 @@ class Track():
     
     def is_moving_bottom(self):
         return self.KF.xs[IVX] > 0
+    
+    @property
+    def score(self):
+        ellr = np.exp(self.score_llr)
+        return ellr/(1 + ellr)
 
     def __repr__(self):
         print(self.to_dict())
@@ -57,7 +63,8 @@ class Track():
             'vel_w': xs[IVW].item(),
             'vel_h': xs[IVH].item(),
             'tentative': self.tentative,
-            'type': self.type
+            'type': self.type,
+            'score': self.score
         }
 
 class BaseKF():
@@ -68,12 +75,16 @@ class BaseKF():
         self.xs = F @ self.xs
         self.P = F @ self.P @ F.T + Q
     
-    def _update(self, z, z_pred, H, R):
+    def _update(self, z, z_pred, H, R, compute_nis = False):
         y = z - z_pred
         S = H @ self.P @ H.T + R
-        K = self.P @ H.T @ np.linalg.inv(S)
+        S_inv = np.linalg.inv(S)
+        K = self.P @ H.T @ S_inv
         self.xs = self.xs + K @ y
         self.P = self.P - K @ H @ self.P
+        if compute_nis:
+            self.nis = y.T @ S_inv @ y
+        return S
 
 
 class LKF_CV(BaseKF):
@@ -102,5 +113,5 @@ class LKF_CV(BaseKF):
 
     def update(self, meas):
         z_pred = self.xs[:self.n_z]
-        self._update(meas, z_pred, self.H, self.R)
+        self.S = self._update(meas, z_pred, self.H, self.R, compute_nis=True)
 

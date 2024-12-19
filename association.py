@@ -10,18 +10,21 @@ def associate_main(track_list, cur_dets):
     tentative_track_list = [trk for trk in track_list if trk.tentative == True]
 
     # associating primary tracks first
-    matched_ptracks_id, matched_pdets_id = associate_tracks_dets(primary_track_list, cur_dets)
+    matched_ptracks_id, matched_pdets_id, p_assoc_scores = associate_tracks_dets(primary_track_list, cur_dets)
     cur_unmantched_dets = cur_dets.loc[~cur_dets.index.isin(matched_pdets_id), :]
-    matched_ttracks_id, matched_tdets_id = associate_tracks_dets(tentative_track_list, cur_unmantched_dets)
+    matched_ttracks_id, matched_tdets_id, t_assoc_scores = associate_tracks_dets(tentative_track_list, cur_unmantched_dets)
     
     matched_tracks_id = matched_ptracks_id + matched_ttracks_id
     matched_dets_id = matched_pdets_id + matched_tdets_id
-    return matched_tracks_id, matched_dets_id
+    assoc_scores = p_assoc_scores + t_assoc_scores
+
+    return matched_tracks_id, matched_dets_id, assoc_scores
 
 
 def associate_tracks_dets(track_list, cur_dets):
     matched_tracks_id = []
-    matched_dets_id = []     
+    matched_dets_id = []
+    assoc_scores = []     
 
     cost_matrix = compute_cost_matrix(track_list, cur_dets)
     track_indices, det_indices = linear_sum_assignment(cost_matrix, maximize=True)
@@ -31,8 +34,9 @@ def associate_tracks_dets(track_list, cur_dets):
         if cost_matrix[i, j] > COST_THR:
             matched_tracks_id.append(track_list[i.item()].id)
             matched_dets_id.append(cur_dets.index[j].item())
+            assoc_scores.append(cost_matrix[i, j])
     
-    return matched_tracks_id, matched_dets_id
+    return matched_tracks_id, matched_dets_id, assoc_scores
 
 
 def compute_cost_matrix(track_list, dets: pd.DataFrame):

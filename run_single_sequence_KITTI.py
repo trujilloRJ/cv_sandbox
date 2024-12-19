@@ -1,10 +1,12 @@
 from track_main import main_cyclic
 
-SEQUENCE = "0007"
+SEQUENCE = "0002"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
 DATASET = 'KITTI'
 SAVE_PATH = f'data/tracks/'
-SHOW_WINDOW = True
+
+# parameters
+
 
 
 if __name__ == "__main__":

@@ -24,9 +24,9 @@ def draw_gt_bb(frame, gt_bb):
 def mark_gt(frame, gt_id, gt_type, gt_bb):
     cv.putText(frame, f'{gt_id}:{gt_type}', (gt_bb[1] + 50, int((gt_bb[0] + gt_bb[2])/2)), cv.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_GT)
 
-def draw_track_bb(frame, track_id, track_type, track_bb):
+def draw_track_bb(frame, track_id, track_type, track_score, track_bb):
     cv.rectangle(frame, (track_bb[1], track_bb[0]), (track_bb[3], track_bb[2]), COLOR_TRACK, 1)
-    cv.putText(frame, f'{track_id}:{track_type}', (track_bb[1]-10, track_bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_TRACK)
+    cv.putText(frame, f'{track_id}:{round(track_score, 2)}', (track_bb[1]-10, track_bb[0]-10), cv.FONT_HERSHEY_SIMPLEX, 0.5, COLOR_TRACK)
 
 
 def draw_detection_bb(frame, det):

@@ -1,10 +1,16 @@
 import pandas as pd 
 import numpy as np
 from typing import List
-from track_maintenance import create_new_track
-from association import associate_main, associate_tracks_dets
+from track_maintenance import create_new_track, update_track_score, SCORE_IOU, SCORE_NIS
+from association import associate_main
 from configuration import get_config
 from tracks import Track
+
+SCORE_FN = SCORE_IOU
+PD = 0.9     # detection probability
+PFA = 0.01   # false alarm probability
+CFA = 0.25    # IoU normalizer
+BFT = 1e-8   # false alarm density
 
 
 def main_cyclic(det_fn: str, dataset = 'KITTI', out_tentative = True):
@@ -49,17 +55,18 @@ def do_track_cyclic(track_list: List[Track], cur_dets, cycle, cycle_time):
             new_trk = create_new_track(track_list, det, cycle_time)
             track_list.append(new_trk)
     else:
-        # predict tracks
+        # predict tracks next position before association
         for trk in track_list:
             trk.predict()
 
         # association, giving priority to primary tracks
-        matched_tracks_id, matched_dets_id = associate_main(track_list, cur_dets)
+        matched_tracks_id, matched_dets_id, assoc_scores = associate_main(track_list, cur_dets)
 
         tracks_ids_to_delete = []
         for i, trk in enumerate(track_list):
             trk.life_count += 1
             trk.tentative = False if trk.life_count >= 5 else True
+            
             if trk.id in matched_tracks_id:
                 det_index = matched_dets_id[matched_tracks_id.index(trk.id)]
                 det = pd.Series(cur_dets.loc[det_index, :])
@@ -69,6 +76,9 @@ def do_track_cyclic(track_list: List[Track], cur_dets, cycle, cycle_time):
                 trk.unmatch_count += 1
                 if (trk.tentative and trk.unmatch_count >= 1) or trk.unmatch_count >= 5:
                     tracks_ids_to_delete.append(trk.id)
+
+            assoc_score = assoc_scores[matched_tracks_id.index(trk.id)] if trk.match else 0
+            update_track_score(trk, SCORE_FN, assoc_score, CFA, PD, PFA)
 
             # delete tracks exiting FoV
             is_exiting_fov = (trk.bb[1] <= 0 and trk.is_moving_left()) or (trk.bb[3] >= 1200 and not trk.is_moving_left())
@@ -111,7 +121,6 @@ def format_tracks_for_eval(tracks_df, dataset='KITTI'):
     tracks_df.loc[:, 'y'] = -1
     tracks_df.loc[:, 'z'] = -1
     tracks_df.loc[:, 'rotation_y'] = -1
-    tracks_df.loc[:, 'score'] = 0.5 # TODO: fill later
 
     tracks_df = tracks_df[config['track_cols']]
 
