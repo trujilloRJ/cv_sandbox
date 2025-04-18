@@ -2,17 +2,17 @@ import cv2 as cv
 import pandas as pd
 import numpy as np
 from os import listdir
-from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, KEY_G, draw_detection_bb, draw_track_bb, draw_gt_bb, mark_gt
+from utils import KEY_A, KEY_ESC, KEY_D, KEY_M, KEY_N, KEY_G, KEY_S, draw_detection_bb, draw_track_bb, draw_gt_bb, mark_gt
 from configuration import get_config
 
 TRACKER_NAME = 'customSORT_v1_newScore'
-SEQUENCE = "0002"
+SEQUENCE = "0011"
 IMG_PATH = f"data/images/{SEQUENCE}/"
 DET_FILE = f"data/nms/{SEQUENCE}.csv"
-# TRACK_FILE = f'data/tracks/{TRACKER_NAME}/data/{SEQUENCE}.txt'
 TRACK_FILE = f'data/tracks/{SEQUENCE}.txt'
 GT_FILE = f"data/gt/{SEQUENCE}.txt"
 DATASET = 'KITTI'
+RESULTS_FOLDER = '_results/images/'
 
 def load_img(frame_name, dets, tracks, gt, show_dets, show_tracks, show_gt):
     frame_index = int(frame_name[:-4])
@@ -38,7 +38,7 @@ def load_img(frame_name, dets, tracks, gt, show_dets, show_tracks, show_gt):
     if show_gt:
         frame = draw_filled_gt(frame, cur_gt)
 
-    cv.putText(frame, f'{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
+    # cv.putText(frame, f'{frame_name}', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255))
 
     return frame
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     
     show_dets = False
     show_tracks = True
-    show_gt = True
+    show_gt = False
 
     config = get_config(DATASET)
     frames = listdir(IMG_PATH)
@@ -105,5 +105,7 @@ if __name__ == '__main__':
             show_gt = not show_gt
         if key == KEY_ESC:
             run = False
+        if key == KEY_S:
+            cv.imwrite(f"{RESULTS_FOLDER}{frame_name}", frame)
         else:
             print(key)

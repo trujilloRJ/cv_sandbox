@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 # TRACKER_NAME = 'customSORT'
 # TRACKER_NAME = 'customSORT_pa_lowr_exfov'
 TRACKER_NAME = 'customSORT_v1_newDeletion'
-RESULTS_FOLDER = f'data/tracks'
+RESULTS_FOLDER = f'data/tracks/{TRACKER_NAME}'
 CLASS = "pedestrian"   # car, pedestrian
-COLS = ['HOTA', 'MOTA', 'IDSW', 'IDTP', 'IDFN', 'IDFP', 'DetA', 'AssA', 'DetRe', 'DetPr', 'AssRe', 'AssPr', 'Dets', 'GT_Dets', 'IDs', 'GT_IDs']
+# COLS = ['HOTA', 'MOTA', 'Frag', 'IDSW', 'IDTP', 'IDFN', 'IDFP', 'DetA', 'AssA', 'DetRe', 'DetPr', 'AssRe', 'AssPr', 'Dets', 'GT_Dets', 'IDs', 'GT_IDs']
+COLS = ['HOTA', 'AssA', 'DetA', 'LocA', 'IDTP', 'IDFN', 'IDFP']
 
 def print_summary_metrics():
     car_res = pd.read_csv(f'{RESULTS_FOLDER}/car_summary.txt', sep=" ")
@@ -74,4 +75,6 @@ if __name__ == '__main__':
     trk1_name = 'customSORT_v1_newDeletion'
     trk2_name = 'customSORT'
     class_ = "car"   # car, pedestrian
-    plot_metrics(trk1_name, trk2_name, class_)
+    # plot_metrics(trk1_name, trk2_name, class_)
+    # print_detailed_metrics()
+    print_summary_metrics()
